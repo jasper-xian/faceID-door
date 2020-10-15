@@ -1,14 +1,27 @@
 import face_recognition
+import os
 
-bohdan = face_recognition.load_image_file("image1.jpg")
-unknown = face_recognition.load_image_file("unknown.jpg")
+known_faces = []
+known_files = os.listdir(os.getcwd()+'/Known')
 
-bohdan_encoding = face_recognition.face_encodings(bohdan)[0]
+for image in known_files:
+    face = face_recognition.load_image_file(os.getcwd()+'/Known/'+image)
+    known_faces.append(face_recognition.face_encodings(face)[0])
+
+
+unknown = face_recognition.load_image_file("barack.jpg")
+
 unknown_encoding = face_recognition.face_encodings(unknown)[0]
 
-results = face_recognition.compare_faces([bohdan_encoding], unknown_encoding)
+results = face_recognition.compare_faces(known_faces, unknown_encoding)
 
-if results[0]:
-    print("Bohdan")
+isKnown = False
+
+for result in results:
+    if result:
+        isKnown = True
+
+if isKnown:
+    print("Known")
 else:
     print("Unknown")

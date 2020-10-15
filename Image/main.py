@@ -1,5 +1,6 @@
 import face_recognition
 import os
+import time
 
 known_faces = []
 known_files = os.listdir(os.getcwd()+'/Known')
@@ -25,6 +26,10 @@ while True:
                 isKnown = True
 
     if isKnown:
-        print("Known")
+        print("Known -> door is opened")
+        time.sleep(0.5)
+        print("waiting...")
+        time.sleep(9.5)
+        print("Door is closed\n")
     else:
         print("Unknown")

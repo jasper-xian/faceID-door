@@ -2,6 +2,14 @@ import face_recognition
 import os
 import time
 import shutil
+from pydrive.drive import GoogleDrive
+from pydrive.auth import GoogleAuth
+
+
+gauth = GoogleAuth()
+gauth.LocalWebserverAuth()
+
+drive = GoogleDrive(gauth)
 
 known_faces = []
 
@@ -15,12 +23,15 @@ while True:
     #add new faces from database to new folder
 
     # process new faces, then add them to Known folder
-    known_files = os.listdir(os.getcwd() + '/New Faces')
+    file_list = drive.ListFile({'q': "'1B0MakdPdPHCq569YeJLbVx6fcCdBAXPi' in parents and trashed=false"}).GetList()
 
-    for image in known_files:
-        face = face_recognition.load_image_file(os.getcwd() + '/New Faces/' + image)
+    for file in file_list:
+        file2 = drive.CreateFile({'id': file['id']})
+        file2.GetContentFile(file['title'])
+        face = face_recognition.load_image_file(file['title'])
         known_faces.append(face_recognition.face_encodings(face)[0])
-        shutil.move(os.getcwd() + '/New Faces/' + image, os.getcwd()+'/Known/'+image)
+        shutil.move(file['title'], os.getcwd() + '/Known/' + file['title'])
+        file.Delete()
 
     # insert code to fetch unknown image from camera
 

@@ -11,4 +11,4 @@ results = face_recognition.compare_faces([bohdan_encoding], unknown_encoding)
 if results[0]:
     print("Bohdan")
 else:
-    print("Uknown")
+    print("Unknown")

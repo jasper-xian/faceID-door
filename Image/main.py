@@ -4,6 +4,7 @@ import time
 import shutil
 from pydrive.drive import GoogleDrive
 from pydrive.auth import GoogleAuth
+import requests
 
 
 gauth = GoogleAuth()
@@ -57,7 +58,10 @@ while True:
     file3.Upload()
 
     # insert code to fetch unknown image from camera
+    url = 'http://192.168.0.25/capture'
+    r = requests.get(url, allow_redirects=True)
 
+    open('unknown.jpg', 'wb').write(r.content)
 
     # processes image then removes it
     unknown = face_recognition.load_image_file("unknown.jpg")

@@ -36,21 +36,27 @@ def imgToVecArray(img):
         return allVec
 
 def compareVecToKnown(vecArray):
-    for a in known_faces:
-        for b in vecArray:
-            #compute euclidean distance in n = 128 space
-            dis = 0
+    peopleFound = []
 
-            for x in range(0, 128):
-                dis = dis + pow(a[0][x] - b[0][x], 2)
+    index = 0
+    for face in known_faces:
+        for a in face:
+            for b in vecArray:
+                #compute euclidean distance in n = 128 space
+                dis = 0
+
+                for x in range(0, 128):
+                    dis = dis + pow(a[0][x] - b[0][x], 2)
+                
+                pow(dis, 0.5)
+
+                print(dis)
+                if dis < 0.7: #trial and error, change if necessary
+                    peopleFound.append(names[index])
             
-            pow(dis, 0.5)
+        index = index + 1
 
-            print(dis)
-            if dis < 0.7: #trial and error, change if necessary
-                return names[a]
-
-    return False
+    return peopleFound
 
 gauth = GoogleAuth()
 gauth.LocalWebserverAuth()
@@ -112,10 +118,10 @@ while True:
     os.remove("unknown.jpg")
     shutil.copyfile("placeholder.jpg","unknown.jpg")
 
-    result = compareVecToKnown(unknownVec)
+    peopleFound = compareVecToKnown(unknownVec)
 
-    if result != False:
-        print("\nKnown. " + result + " detected -> door is opened")
+    if len(peopleFound) > 0:
+        print("\nKnown. " + peopleFound + " detected -> door is opened")
         time.sleep(0.5)
         print("waiting...")
         time.sleep(9.5)

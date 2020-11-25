@@ -6,6 +6,10 @@ from pydrive.auth import GoogleAuth
 import requests
 import cv2
 
+known_faces = []
+
+names = []
+
 def imgToVecArray(img):
     #bounding box
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml') #pre-trained face bounder
@@ -31,15 +35,10 @@ def imgToVecArray(img):
     
         return allVec
 
-def compareVecArray(vec1, vec2):
-    found = False
-
-    for a in vec1:
-        for b in vec2:
+def compareVecToKnown(vecArray):
+    for a in known_faces:
+        for b in vecArray:
             #compute euclidean distance in n = 128 space
-            print(a[0])
-            print(b)
-
             dis = 0
 
             for x in range(0, 128):
@@ -49,19 +48,14 @@ def compareVecArray(vec1, vec2):
 
             print(dis)
             if dis < 0.7: #trial and error, change if necessary
-                found = True
+                return names[a]
 
-    return found
-
+    return False
 
 gauth = GoogleAuth()
 gauth.LocalWebserverAuth()
 
 drive = GoogleDrive(gauth)
-
-known_faces = []
-
-names = []
 
 known_files = os.listdir(os.getcwd()+'/Known')
 
@@ -118,12 +112,10 @@ while True:
     os.remove("unknown.jpg")
     shutil.copyfile("placeholder.jpg","unknown.jpg")
 
-    isKnown = False
-    for vec in known_faces:
-        isKnown = compareVecArray(vec, unknownVec)
+    result = compareVecToKnown(unknownVec)
 
-    if isKnown:
-        print("\nKnown -> door is opened")
+    if result != False:
+        print("\nKnown. " + result + " detected -> door is opened")
         time.sleep(0.5)
         print("waiting...")
         time.sleep(9.5)
